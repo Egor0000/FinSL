@@ -1,0 +1,21 @@
+let x of type SRL {
+    currency = USD;
+}
+
+balance sheet b1 for x {
+    assets a1 {
+        cash = 1000000;
+        expenses = 900000;
+        inventory = 213444;
+        accounts = 12344;
+        long term = 123123;
+    }
+
+    liabilities l1 {
+        accounts = 231333;
+        others = 2222;
+        long term = 32132;
+    }
+
+    export(l1);
+}
