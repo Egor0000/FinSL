@@ -1,5 +1,5 @@
-// Generated from D:/EGOR/Projects/IdeaProjects/FinSl/finsl-dsl/src/main/java/md/utm/isa/faf/dsl\DslLexer.g4 by ANTLR 4.9.2
-package md.utm.isa.faf.dsl;
+// Generated from D:/EGOR/Projects/FinSL/FinSL/src/main/java/md/utm/isa/faf/dsl\DslLexer.g4 by ANTLR 4.9.2
+package md.utm.isa.faf.gen.md.utm.isa.faf.dsl;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Token;
