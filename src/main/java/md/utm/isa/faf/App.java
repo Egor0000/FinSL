@@ -1,14 +1,13 @@
 package md.utm.isa.faf;
 
-import md.utm.isa.faf.gen.md.utm.isa.faf.dsl.DslLexer;
-import md.utm.isa.faf.gen.md.utm.isa.faf.dsl.DslParseListener;
-import md.utm.isa.faf.gen.md.utm.isa.faf.dsl.DslParser;
-import md.utm.isa.faf.gen.md.utm.isa.faf.dsl.DslVisitor;
+import md.utm.isa.faf.gen.md.utm.isa.faf.dsl.*;
+import md.utm.isa.faf.utils.FileUtil;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -18,10 +17,11 @@ import java.util.List;
  */
 public class App 
 {
-    public static void main( String[] args ) throws IOException {
+    public static void main( String[] args ) throws Exception {
         System.out.println( "Hello World!" );
         //todo add file here
-        CharStream charStream = CharStreams.fromFileName("/path/to/file.ext");
+        File file = FileUtil.getFileFromResources("test.txt");
+        CharStream charStream = CharStreams.fromPath(file.toPath());
 
         // Lexer
         DslLexer lexer = new DslLexer(charStream);
@@ -30,11 +30,11 @@ public class App
         // Parser
         DslParser parser = new DslParser(commonTokenStream);
 
-        // Listener
-        parser.addParseListener(new DslParseListener());
+        // Visit root
         DslVisitor visitor = new DslVisitor();
-        visitor.visit(parser.program());
+        DslParser.ProgramContext programContext = parser.program();
+        visitor.visit(programContext);
 
-
+        System.out.println(visitor.getBalanceSheet());
     }
 }

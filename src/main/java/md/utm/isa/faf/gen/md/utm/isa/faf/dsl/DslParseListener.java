@@ -7,7 +7,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 public class DslParseListener extends DslParserBaseListener{
     @Override
     public void enterProgram(DslParser.ProgramContext ctx) {
-        throw new UnsupportedOperationException("#enterProgramm");
+        super.enterProgram(ctx);
     }
 
     @Override
