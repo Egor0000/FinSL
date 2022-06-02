@@ -70,7 +70,7 @@ term           : factor ( ( '-' | '+' ) factor )* ;
 factor         : unary ( ( '/' | '*' ) unary )* ;
 
 unary          : ( '!' | '-' ) unary | call ;
-call           : primary ( '(' arguments? ')' | '.' IDENTIFIER )*  ;
+call           : primary | main_functions ( '(' arguments? ')' | '.' IDENTIFIER )*  ;
 
 // add all number literals to primary
 primary        : IDENTIFIER |BOOL_LITERAL | 'null' | 'this'
@@ -86,3 +86,6 @@ bal_sheet_liab      : ACCOUNTS | OTHERS | LONG_TERM;
 bal_sheet_equity    : CAPITAL | RETAINED;
 
 entities: SRL | INDIVIDUAL;
+
+// Functions
+main_functions: IMPORT_FN | EXPORT_FN;

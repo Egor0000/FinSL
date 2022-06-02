@@ -479,6 +479,18 @@ public class DslParserBaseListener implements DslParserListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitEntities(DslParser.EntitiesContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterMain_functions(DslParser.Main_functionsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitMain_functions(DslParser.Main_functionsContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

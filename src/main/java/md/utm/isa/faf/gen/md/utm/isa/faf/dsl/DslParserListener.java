@@ -397,4 +397,14 @@ public interface DslParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitEntities(DslParser.EntitiesContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link DslParser#main_functions}.
+	 * @param ctx the parse tree
+	 */
+	void enterMain_functions(DslParser.Main_functionsContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link DslParser#main_functions}.
+	 * @param ctx the parse tree
+	 */
+	void exitMain_functions(DslParser.Main_functionsContext ctx);
 }

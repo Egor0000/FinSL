@@ -2,6 +2,7 @@ package md.utm.isa.faf.gen.md.utm.isa.faf.dsl;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import md.utm.isa.faf.ExportService;
 import md.utm.isa.faf.gen.md.utm.isa.faf.dsl.entities.Asset;
 import md.utm.isa.faf.gen.md.utm.isa.faf.dsl.entities.BalanceSheet;
 import md.utm.isa.faf.gen.md.utm.isa.faf.dsl.entities.Equity;
@@ -9,6 +10,7 @@ import md.utm.isa.faf.gen.md.utm.isa.faf.dsl.entities.Liability;
 
 import java.text.NumberFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Data
 public class DslVisitor extends DslParserBaseVisitor{
@@ -16,7 +18,9 @@ public class DslVisitor extends DslParserBaseVisitor{
     private final Liability liability = new Liability();
     private final Equity equity =  new Equity();
 
-    private final BalanceSheet balanceSheet = new BalanceSheet();
+    private BalanceSheet balanceSheet = new BalanceSheet();
+
+    private final List<BalanceSheet> balanceSheets = new ArrayList<>();
 
     private final Map<Integer,String> newDeclaredMap = new HashMap<>();
 
@@ -53,7 +57,25 @@ public class DslVisitor extends DslParserBaseVisitor{
 
     @Override
     public Object visitBalanceSheet(DslParser.BalanceSheetContext ctx) {
-        return super.visitBalanceSheet(ctx);
+        balanceSheet = new BalanceSheet();
+
+        balanceSheet.setName(ctx.children.get(1).getText());
+        newDeclaredMap.clear();
+
+        validateSheet(balanceSheet);
+
+        Object resCtx = super.visitBalanceSheet(ctx);
+        balanceSheets.add(balanceSheet);
+        return resCtx;
+    }
+
+    private void validateSheet(BalanceSheet newSheet) {
+        // search for duplicate names
+        // todo export this validation to all variables
+        if (balanceSheets.stream().map(BalanceSheet::getName).collect(Collectors.toSet()).contains(newSheet.getName())) {
+            throw new RuntimeException(String.format("Error in balance sheet declaration. Duplicate identifier %s", newSheet.getName()));
+        }
+
     }
 
     @Override
@@ -313,5 +335,25 @@ public class DslVisitor extends DslParserBaseVisitor{
     @Override
     public Object visitEntities(DslParser.EntitiesContext ctx) {
         return super.visitEntities(ctx);
+    }
+
+    @Override
+    public Object visitMain_functions(DslParser.Main_functionsContext ctx) {
+        if (ctx.start.getText().equals("export")) {
+            String sheetName = ctx.parent.getChild(2).getText();
+
+            Optional<BalanceSheet> sheet = balanceSheets.stream().filter(s -> s.getName().equals(sheetName)).findFirst();
+
+            if (sheet.isEmpty()) {
+                throw new RuntimeException(String.format("Could not find sheet with name %s", sheetName));
+            }
+
+            try {
+                ExportService.exportBalanceSheetToXLSX(sheet.get());
+            } catch (Exception ex) {
+                throw new RuntimeException(ex.getMessage());
+            }
+        }
+        return super.visitMain_functions(ctx);
     }
 }

@@ -1,6 +1,6 @@
 balance sheet b1 for x {
     assets a1 {
-        cash = '1000000;
+        cash = 1000000;
         expenses = 900000;
         inventory = 213444;
         accounts = 12344;
@@ -10,8 +10,24 @@ balance sheet b1 for x {
     liabilities l1 {
         accounts = 231333;
         others = 2222;
-        long term = '32132,78;
+        long term = 32132.78;
+    }
+}
+
+balance sheet b2 for x {
+    assets a1 {
+        cash = 431243;
+        expenses = 3;
+        inventory = 3;
+        accounts = 2;
+        long term = 1;
     }
 
-    export(l1);
+    liabilities l1 {
+        accounts = 3;
+        others = 4;
+        long term = 3.3;
+    }
 }
+
+export(b1);

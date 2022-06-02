@@ -244,4 +244,10 @@ public interface DslParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitEntities(DslParser.EntitiesContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link DslParser#main_functions}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMain_functions(DslParser.Main_functionsContext ctx);
 }

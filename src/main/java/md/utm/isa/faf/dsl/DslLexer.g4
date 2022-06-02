@@ -23,7 +23,6 @@ FUNCTION:           'function';
 IF:                 'if';
 IS:                 'is';
 IMPLEMENTS:         'implements';
-IMPORT:             'import';
 INTERFACE:          'interface';
 NEW:                'new';
 OF:                 'of'; // smth like extends or implements
@@ -55,6 +54,10 @@ LONG_TERM:          'long term';
 OTHERS:             'others';
 CAPITAL:            'capital';
 RETAINED:           'retained';
+
+IMPORT_FN: 'import';
+EXPORT_FN: 'export';
+
 
 
 //Entities
@@ -138,11 +141,13 @@ MOD_ASSIGN:         '%=';
 EXP_ASSIGN:         '**=';
 
 
+
 // Whitespace and comments
 WS:                 [ \t\r\n\u000C]+ -> channel(HIDDEN);
 COMMENT:            '/*' .*? '*/'    -> channel(HIDDEN);
 LINE_COMMENT:       '//' ~[\r\n]*    -> channel(HIDDEN);
 UNEXPECTED_CHAR:    . -> channel(ERROR);
+
 
 
 // Fragment rules

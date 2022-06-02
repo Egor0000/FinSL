@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class BalanceSheet {
+    String name;
     Asset asset;
     Liability liability;
     Equity equity;
