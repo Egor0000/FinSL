@@ -3,12 +3,14 @@ package md.utm.isa.faf.gen.md.utm.isa.faf.dsl;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import md.utm.isa.faf.ExportService;
-import md.utm.isa.faf.gen.md.utm.isa.faf.dsl.entities.Asset;
-import md.utm.isa.faf.gen.md.utm.isa.faf.dsl.entities.BalanceSheet;
-import md.utm.isa.faf.gen.md.utm.isa.faf.dsl.entities.Equity;
-import md.utm.isa.faf.gen.md.utm.isa.faf.dsl.entities.Liability;
+import md.utm.isa.faf.gen.md.utm.isa.faf.dsl.entities.*;
+import md.utm.isa.faf.gen.md.utm.isa.faf.dsl.enums.Currency;
+import md.utm.isa.faf.gen.md.utm.isa.faf.dsl.enums.FinTypes;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.xmlbeans.impl.store.Cur;
 
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -19,10 +21,15 @@ public class DslVisitor extends DslParserBaseVisitor{
     private final Equity equity =  new Equity();
 
     private BalanceSheet balanceSheet = new BalanceSheet();
+    private FinEntity finEntity = new FinEntity();
 
     private final List<BalanceSheet> balanceSheets = new ArrayList<>();
 
     private final Map<Integer,String> newDeclaredMap = new HashMap<>();
+
+    private List<FinEntity> finEntities = new ArrayList<>();
+
+    private List<Map.Entry<String, String>> entitySheetRel = new ArrayList<>();
 
 
     @Override
@@ -32,6 +39,15 @@ public class DslVisitor extends DslParserBaseVisitor{
 
     @Override
     public Object visitDeclaration(DslParser.DeclarationContext ctx) {
+        String dec = ctx.getChild(0).getText();
+
+        if (dec.equals("print")) {
+            System.out.println("PRINTED");
+        }
+
+        if (dec.equals("calcTax")) {
+            System.out.println("taxCalc");
+        }
         return super.visitDeclaration(ctx);
     }
 
@@ -47,6 +63,17 @@ public class DslVisitor extends DslParserBaseVisitor{
 
     @Override
     public Object visitVarDecl(DslParser.VarDeclContext ctx) {
+        String finEntityName = ctx.getChild(1).getText();
+        finEntity.setName(finEntityName);
+        String finEnityType = ctx.getChild(4).getChild(0).getText();
+
+        if (!FinTypes.contains(finEnityType)) {
+            throw new RuntimeException("Invalid financial type");
+        }
+
+        finEntity.setFinTypes(FinTypes.getFinTypeByName(finEnityType));
+
+
         return super.visitVarDecl(ctx);
     }
 
@@ -214,6 +241,32 @@ public class DslVisitor extends DslParserBaseVisitor{
 
     @Override
     public Object visitStatement(DslParser.StatementContext ctx) {
+        if (finEntity!=null && finEntity.getName()!=null) {
+            if (!finEntities.stream()
+                    .map(e -> e.getName())
+                    .collect(Collectors.toList())
+                    .contains(finEntity.getName())) {
+                for (int i =1; i< ctx.getChild(0).getChildCount()-1; i++) {
+                    String[] splitted = ctx.getChild(0).getChild(i).getText().split("=");
+                    if (splitted.length==2 && splitted[0].equals("currency") && Currency.contains(splitted[1].replace(";", ""))) {
+                        finEntity.setCurrency(Currency.getCurrencyByName(splitted[1].replace(";", "")));
+                    } else {
+                        try {
+                            NumberFormat format = NumberFormat.getInstance(Locale.getDefault());
+                            Number number = format.parse(splitted[1].replace(";", ""));
+                            finEntity.getVars().put(splitted[0],  number.doubleValue());
+                        } catch (Exception ex) {
+                            throw new RuntimeException(ex.getMessage());
+                        }
+
+                    }
+
+                }
+
+                finEntities.add(finEntity);
+
+            }
+        }
         return super.visitStatement(ctx);
     }
 
@@ -353,6 +406,53 @@ public class DslVisitor extends DslParserBaseVisitor{
             } catch (Exception ex) {
                 throw new RuntimeException(ex.getMessage());
             }
+        }
+
+        if (ctx.start.getText().equals("print")) {
+            String printName = ctx.parent.getChild(2).getText();
+
+            Optional<BalanceSheet> sheet = balanceSheets.stream().filter(s -> s.getName().equals(printName)).findFirst();
+
+            if (sheet.isEmpty()) {
+                Optional<FinEntity> entity = finEntities.stream().filter(s -> s.getName().equals(printName)).findFirst();
+
+                if (entity.isEmpty()) {
+                    throw new RuntimeException(String.format("Could not find variables with name %s", printName));
+                }
+
+                System.out.println(entity.get());
+            } else {
+                System.out.println(sheet.get());
+            }
+
+        }
+
+        if (ctx.start.getText().equals("calcTax")) {
+            String args = ctx.parent.getChild(2).getText();
+
+            String[] splitArgs = args.split(",");
+            List<String> sss = Arrays.stream(splitArgs).map(s -> s.trim()).collect(Collectors.toList());
+
+            if (sss.size() !=2) {
+                throw new RuntimeException("Invalid number of arguments");
+            }
+
+            Optional<FinEntity> fe = finEntities.stream().filter(s-> s.getName().equals(sss.get(0))).findFirst();
+
+            if (fe.isEmpty()) {
+                throw new RuntimeException("Invalid financial entity");
+            }
+
+            try
+            {
+                Double.parseDouble(sss.get(1));
+            }
+            catch(NumberFormatException e)
+            {
+                throw new RuntimeException("Second arg not a number");
+            }
+
+            TaxService.calculateTax(Double.parseDouble(sss.get(1)), fe.get(), fe.get().getVars().get("abstract_tax"));
         }
         return super.visitMain_functions(ctx);
     }

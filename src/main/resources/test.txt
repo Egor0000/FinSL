@@ -1,3 +1,9 @@
+let x of type SRL {
+    currency = USD;
+    abstract_tax = 0.19;
+    rnd = 23;
+}
+
 balance sheet b1 for x {
     assets a1 {
         cash = 1000000;
@@ -31,3 +37,7 @@ balance sheet b2 for x {
 }
 
 export(b1);
+
+print(x);
+
+calcTax(x, 105000);

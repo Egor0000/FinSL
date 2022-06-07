@@ -18,7 +18,6 @@ import java.util.List;
 public class App 
 {
     public static void main( String[] args ) throws Exception {
-        System.out.println( "Hello World!" );
         //todo add file here
         File file = FileUtil.getFileFromResources("test.txt");
         CharStream charStream = CharStreams.fromPath(file.toPath());
@@ -35,6 +34,5 @@ public class App
         DslParser.ProgramContext programContext = parser.program();
         visitor.visit(programContext);
 
-        System.out.println(visitor.getBalanceSheet());
     }
 }

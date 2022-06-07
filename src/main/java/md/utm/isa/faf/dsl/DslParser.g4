@@ -59,7 +59,7 @@ block          : '{' declaration* '}' ;
 
 expression     : assignment ';';
 
-assignment     : ( call '.' )? IDENTIFIER '=' assignment
+assignment     : ( call DOT )? IDENTIFIER '=' assignment
                | logic_or ;
 
 logic_or       : logic_and ( OR logic_and )* ;
@@ -70,12 +70,12 @@ term           : factor ( ( '-' | '+' ) factor )* ;
 factor         : unary ( ( '/' | '*' ) unary )* ;
 
 unary          : ( '!' | '-' ) unary | call ;
-call           : primary | main_functions ( '(' arguments? ')' | '.' IDENTIFIER )*  ;
+call           : primary | main_functions ( '(' arguments? ')' | DOT IDENTIFIER )*  ;
 
 // add all number literals to primary
 primary        : IDENTIFIER |BOOL_LITERAL | 'null' | 'this'
                | DECIMAL_LITERAL | FLOAT_LITERAL  | STRING_LITERAL |  '(' expression ')'
-               | 'super' '.' IDENTIFIER ;
+               | 'super' DOT IDENTIFIER ;
 
 function       : IDENTIFIER  '(' parameters? ')' block ;
 parameters     : IDENTIFIER ( ',' IDENTIFIER )* ;
@@ -88,4 +88,5 @@ bal_sheet_equity    : CAPITAL | RETAINED;
 entities: SRL | INDIVIDUAL;
 
 // Functions
-main_functions: IMPORT_FN | EXPORT_FN;
+main_functions: IMPORT_FN | EXPORT_FN | PRINT | CALC_TAX;
+

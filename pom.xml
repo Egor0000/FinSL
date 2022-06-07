@@ -8,6 +8,7 @@
   <artifactId>finsl-dsl</artifactId>
   <version>1.0-SNAPSHOT</version>
 
+
   <name>finsl-dsl</name>
   <!-- FIXME change it to the project's website -->
   <url>http://www.example.com</url>
@@ -30,8 +31,18 @@
     <dependency>
       <groupId>org.antlr</groupId>
       <artifactId>antlr4-runtime</artifactId>
-      <version>4.9.3</version>
+      <version>4.7.1</version>
     </dependency>
+
+    <!-- https://mvnrepository.com/artifact/org.antlr/antlr4 -->
+    <dependency>
+      <groupId>org.antlr</groupId>
+      <artifactId>antlr4</artifactId>
+      <version>4.7.1</version>
+      <scope>test</scope>
+      <!-- If you only need the JAR in test, add the following line too -->
+    </dependency>
+
 
     <dependency>
       <groupId>org.projectlombok</groupId>
@@ -80,6 +91,23 @@
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
           <version>3.0.2</version>
+          <configuration>
+            <archive>
+              <manifest>
+                <mainClass>md.utm.isa.faf.App</mainClass>
+              </manifest>
+            </archive>
+          </configuration>
+
+        </plugin>
+
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <version>3.0.0</version>
+          <configuration>
+            <mainClass>md.utm.isa.faf.App</mainClass>
+          </configuration>
         </plugin>
         <plugin>
           <artifactId>maven-install-plugin</artifactId>
